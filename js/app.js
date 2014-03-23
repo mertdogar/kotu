@@ -6,7 +6,8 @@ mudahale.config(['$httpProvider', function($httpProvider) {
 }]);
 
 mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout', '$q', function ($scope, $http, $window, $timeout, $q) {
-    var tz = new nat.tokenizer();
+
+    $scope.kotu = new kotu();
 
     $scope.recognition = new webkitSpeechRecognition();
     $scope.recognition.continuous = true;
@@ -15,7 +16,7 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
     $scope.history = [];
 
     $scope.recognition.onstart = function() {
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance('I am listening.'));
+        console.log('i am listening...');
     };
 
     $scope.recognition.onresult = function(event) {
@@ -24,9 +25,11 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
         for (var i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
                 var exp = event.results[i][0].transcript;
-                $scope.understand(exp);
-                //
 
+
+                var result = $scope.kotu.understand(exp);
+                $scope.putResponse(result.reply);
+                $scope.history.push(result);
             } else {
                 interim_transcript += event.results[i][0].transcript;
             }
@@ -36,85 +39,23 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
     };
 
     $scope.recognition.onerror = function(event) {
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance('I don\'t get it.'));
+        console.log('do not get it...');
     };
 
     $scope.recognition.onend = function() {
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance('I\'m done.'));
+        console.log('i am done.')
     }
-
-    $scope.understand = function(exp) {
-        var understood = false;
-
-        var tokens = tz.execute(exp).map(function(token) {
-            return {
-                value: token.value,
-                type: nat.util.getType(token.type)
-            };
-        });
-
-        var result = $scope.analyze(tokens);
-
-        if(result.succeeded) {
-            $scope.putResponse(result.rule.return);
-        } else {
-            $scope.final_transcript += exp;
-        }
-
-
-        $scope.history.push(result);
-    };
-
-    $scope.analyze = function(tokens) {
-        var response = {
-            succeeded: false
-        };
-
-        $scope.rules.some(function(rule) {
-            rule.match.some(function(pattern) {
-                var offset = 0;
-                var matchedTokenCount = 0;
-                for(var i = 0; i < pattern.length && i < tokens.length; i++) {
-
-                    var token = tokens[i+offset];
-                    var patternTokenExp = pattern[i];
-
-                    var hasModifier = patternTokenExp[0] == '?';
-
-                    var patternToken = hasModifier ? patternTokenExp.slice(1):patternTokenExp;
-
-                    if(token.value.toLowerCase()==patternToken.toLowerCase()) {
-                        matchedTokenCount++;
-                    } else if(hasModifier) {
-                        i++;
-                        offset--;
-                    } else {
-                        break;
-                    }
-
-                    if(i == pattern.length-1) {
-                        response =  {
-                            succeeded: true,
-                            rule: rule,
-                            pattern: pattern,
-                            tokens: tokens,
-                            matchedTokenCount: matchedTokenCount
-                        };
-                        break;
-                    }
-                };
-                return response.succeeded;
-            });
-            return response.succeeded;
-        });
-
-        return response;
-
-    };
 
     $scope.putResponse = function(response) {
         $scope.animateResponse = false;
         $scope.responseContent = response;
+
+        /**
+         * speak
+         * var msg = new SpeechSynthesisUtterance(response);
+         * window.speechSynthesis.speak(msg);
+         */
+
 
         $timeout(function() {
             $scope.animateResponse = true;
@@ -123,27 +64,8 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
         $timeout(function() {
             $scope.animateResponse = false;
         }, 5000);
-    }
 
-    $scope.rules = [
-        {
-            match: [['what', 'is', '?the', 'time']],
-            return: 'the time is ' + new Date() + '.'
-        },
-        {
-            match: [['who', '?are', 'you'], ['tell', '?me', 'about', 'you'], ['you']],
-            return: 'I am nobody.'
-        },
-        {
-            match: [['hello'], ['hi'], ['holla']],
-            return: 'Hello darling.'
-        },
-        {
-            match: [['what', '?the', 'hell', 'are', 'you', 'waiting', 'for']],
-            return: 'A Linkin Park listener you are. Good.'
-        }
-    ];
-
+    };
 
     $scope.final_transcript = '';
     $scope.recognition.start();
