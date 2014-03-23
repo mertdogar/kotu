@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr" ng-app="kotu">
+<head>
+    <meta charset="utf-8">
+    <title>kotu</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:900,600,400,300,200,100" rel="stylesheet">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script type="text/javascript" src="js/jsgif/LZWEncoder.js"></script>
+    <script type="text/javascript" src="js/jsgif/NeuQuant.js"></script>
+    <script type="text/javascript" src="js/jsgif/GIFEncoder.js"></script>
+    <script type="text/javascript" src="js/jsgif/b64.js"></script>
+
+    <script src="js/esprima.js"></script>
+    <script src="js/nat/qunit-1.12.0.js"></script>
+    <script src="js/nat/nat.js"></script>
+    <script src="js/async.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+    <script src="http://code.angularjs.org/1.2.14/angular-sanitize.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body>
+    <div id="app" ng-controller="mainController" class="app">
+        <div class="title" ng-click="listen()">say hi!</div>
+        <div class="responseContent" ng-class="{animateResponse: animateResponse}">{{responseContent}}</div>
+    </div>
+
+
+</body>
+</html>

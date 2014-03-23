@@ -1,0 +1,52 @@
+body {
+    background: radial-gradient(hsl(0,100%,100%) 0%,hsla(0,0%,0%,0.1) 100%) fixed;
+}
+
+.app {
+    width: 800px;
+    margin: auto auto;
+    font-family: 'Raleway',Helvetica Neue,Helvetica,Arial;
+}
+
+.app .title {
+    width: 100%;
+    font-size: 50px;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 800;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.30);
+    margin: 50px 0px 30px 0px;
+}
+
+.app .responseContent {
+    width: 100%;
+    font-size: 50px;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 800;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.30);
+    margin: 50px 0px 30px 0px;
+    opacity: 0;
+    -webkit-transition: opacity 1s;
+}
+
+.app .responseContent.animateResponse {
+    opacity: 1;
+}
+
+.app video {
+    width: 320px;
+    border: 1px solid black;
+    box-shadow: 0px 0px 20px black;
+}
+
+
+#image {
+    width: 320px;
+    border: 1px solid black;
+    box-shadow: 0px 0px 20px black;
+}
+
+#output {
+    display: none;
+}
