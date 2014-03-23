@@ -15,7 +15,7 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
     $scope.history = [];
 
     $scope.recognition.onstart = function() {
-        console.log('i\'m listening...');
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance('I am listening.'));
     };
 
     $scope.recognition.onresult = function(event) {
@@ -36,11 +36,11 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
     };
 
     $scope.recognition.onerror = function(event) {
-        console.log('don\'t get it');
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance('I don\'t get it.'));
     };
 
     $scope.recognition.onend = function() {
-        console.log('i\'m done.')
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance('I\'m done.'));
     }
 
     $scope.understand = function(exp) {
@@ -137,6 +137,10 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
         {
             match: [['hello'], ['hi'], ['holla']],
             return: 'Hello darling.'
+        },
+        {
+            match: [['what', '?the', 'hell', 'are', 'you', 'waiting', 'for']],
+            return: 'A Linkin Park listener you are. Good.'
         }
     ];
 
