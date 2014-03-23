@@ -27,14 +27,16 @@ mudahale.controller('mainController', ['$scope', '$http', '$window', '$timeout',
                 var exp = event.results[i][0].transcript;
 
 
-                var result = $scope.kotu.understand(exp);
-                $scope.putResponse(result.reply);
-                $scope.history.push(result);
+                var result = $scope.kotu.understand(exp).then(function(result) {
+                    $scope.putResponse(result.reply);
+                    $scope.history.push(result);
+                    $scope.$digest();
+                });
+
             } else {
                 interim_transcript += event.results[i][0].transcript;
             }
         }
-
         $scope.$digest();
     };
 

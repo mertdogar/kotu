@@ -96,7 +96,7 @@ function kotu() {
                 ['eval'],
                 ['calc']
             ],
-            return: function(tokens) {
+            return: function(tokens, respond) {
                 var rem = that.replaceAliases(tokens.slice(1));
 
                 var exp = '';
@@ -112,7 +112,7 @@ function kotu() {
                     return 'can\'t';
                 }
 
-                return exp + '=' + returnValue;
+                respond(exp + '=' + returnValue);
             }
         }
     ];
@@ -232,11 +232,18 @@ kotu.prototype.replaceAliases = function(tokens) {
 };
 
 kotu.prototype.reply = function(result) {
+    var defer = Q.defer();
+
     if(this.isFunction(result.rule.return)) {
-        return result.rule.return(result.tokens);
+        result.rule.return(result.tokens, function(value) {
+            defer.resolve(value);
+        });
     } else {
-        return result.rule.return;
+        setTimeout(function() {
+            defer.resolve(result.rule.return);
+        });
     }
+    return defer.promise;
 };
 
 kotu.prototype.isFunction = function(functionToCheck) {
@@ -246,6 +253,8 @@ kotu.prototype.isFunction = function(functionToCheck) {
 
 
 kotu.prototype.understand = function(exp) {
+    var defer = Q.defer();
+
     var tokens = this.tz.execute(exp).map(function(token) {
         return {
             value: token.value,
@@ -256,9 +265,12 @@ kotu.prototype.understand = function(exp) {
     var result = this.analyze(tokens);
 
     if(result.succeeded) {
-        result.reply = this.reply(result);
+        this.reply(result).then(function(replyText) {
+            result.reply = replyText;
+            defer.resolve(result);
+        });
     }
 
-    return result;
+    return defer.promise;
 };
 
