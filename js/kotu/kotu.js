@@ -1,10 +1,11 @@
 function kotu() {
+    var that = this;
     this.tz = new nat.tokenizer();
 
     this.aliases = [
         {
             match: [
-                ['open', 'parenthesis'],
+                ['open', 'parentheses'],
                 ['open', 'brackets'],
                 ['open', 'bracket']
             ],
@@ -12,11 +13,40 @@ function kotu() {
         },
         {
             match: [
-                ['close', 'parenthesis'],
+                ['close', 'parentheses'],
                 ['close', 'brackets'],
                 ['close', 'bracket']
             ],
             replace: ')'
+        },
+        {
+            match: [
+                ['plus'],
+                ['sum']
+            ],
+            replace: '+'
+        },
+        {
+            match: [
+                ['minus'],
+                ['subtract']
+            ],
+            replace: '-'
+        },
+        {
+            match: [
+                ['multiply'],
+                ['times']
+            ],
+            replace: '*'
+        },
+        {
+            match: [
+                ['equals'],
+                ['is', 'equals'],
+                ['is', 'equal']
+            ],
+            replace: '=='
         },
         {
             match: [
@@ -67,8 +97,12 @@ function kotu() {
                 ['calc']
             ],
             return: function(tokens) {
-                var rem = replaceAliases(tokens.slice(1));
-                var exp = rem.join('');
+                var rem = that.replaceAliases(tokens.slice(1));
+
+                var exp = '';
+                rem.forEach(function(token) {
+                    exp += token.value;
+                });
 
                 var returnValue = 'unknown';
 
@@ -166,9 +200,11 @@ kotu.prototype.replaceAliases = function(tokens) {
                     if(i == pattern.length-1) {
                         response =  {
                             succeeded: true,
-                            rule: rule,
+                            rule: alias,
                             pattern: pattern,
                             tokens: tokens,
+                            matchingStartsAt: a,
+                            matchedTokenLength: i+1,
                             matchedTokenCount: matchedTokenCount
                         };
                         break;
@@ -180,11 +216,18 @@ kotu.prototype.replaceAliases = function(tokens) {
             return response.succeeded;
         });
 
+        if(response.succeeded) {
+            console.log(response);
 
-        console.log(response);
+            tokens.splice(response.matchingStartsAt, response.matchedTokenLength, {value: response.rule.replace, replaced: true});
+            //Array.prototype.splice.apply(tokens, [response.matchingStartsAt, reponse.matchedTokenCount].concat(diff));
+
+            response = {succeeded:false};
+        }
+
     });
 
-    return response;
+    return tokens;
 
 };
 
