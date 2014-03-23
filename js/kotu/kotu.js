@@ -90,6 +90,25 @@ function kotu() {
         },
         {
             match: [
+                ['open', '?file']
+            ],
+            return: function(tokens, respond) {
+                var rem = tokens.slice(2)[0].value;
+                console.log(rem);
+
+                var txtFile = new XMLHttpRequest();
+                txtFile.open("GET", "../" + rem + ".html", true);
+                txtFile.onreadystatechange = function() {
+                    if (txtFile.readyState === 4 && txtFile.status === 200)
+                        respond(txtFile.responseText);
+                    else
+                        console.log('couldn\'t open file.');
+                };
+                txtFile.send(null);
+            }
+        },
+        {
+            match: [
                 ['evaluate'],
                 ['calculate'],
                 ['run'],
